@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"time"
 
-	. "micro/fundational"
-	"micro/handlers"
+	. "github.com/byronzr/micro/fundational"
+	"github.com/byronzr/micro/handlers"
 )
 
 func Start() {

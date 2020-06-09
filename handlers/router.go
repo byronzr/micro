@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	. "micro/fundational"
+	. "github.com/byronzr/micro/fundational"
 )
 
 type ROUTER struct{}

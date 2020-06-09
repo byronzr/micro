@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	. "micro/fundational"
+	. "github.com/byronzr/micro/fundational"
 )
 
 type Response struct {
