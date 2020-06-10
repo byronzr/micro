@@ -57,7 +57,7 @@ func (OPTIONS) ReportThisweek(r *http.Request) (response []byte, err error) {
 }
 ```
 
-# 粗爆的路由转换
+# 粗暴的路由转换
 将驼峰法则自动转换成路由 URL。
 
   注： AbcdEfg => /abcd/efg 所以要注意 ABCDEFG => /a/b/c/e/d/f/g
