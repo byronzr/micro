@@ -1,6 +1,7 @@
 package micro
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -33,8 +34,15 @@ import (
 // 	msg := "POST.Check"
 // 	return json.Marshal(&Response{Result: msg})
 // }
+type SERVICE struct {
+	Mux *http.ServeMux
+}
 
-func Start(hands ...interface{}) {
+var (
+	S = &SERVICE{}
+)
+
+func (s *SERVICE) Register(hands ...interface{}) *SERVICE {
 	if len(hands) == 0 {
 		helper.Inf("not handler register. service shutdown.")
 	}
@@ -42,13 +50,17 @@ func Start(hands ...interface{}) {
 		helper.RegisterHandler(h)
 	}
 	helper.Inf("service start.")
-	mux := http.NewServeMux()
-	mux.Handle("/", helper.ROUTER{})
-	server := &http.Server{
-		Addr:         ":8000",
-		WriteTimeout: time.Second * 10,
-		Handler:      mux,
-	}
+	s.Mux = http.NewServeMux()
+	s.Mux.Handle("/", helper.ROUTER{})
+	return s
+}
 
+func (s *SERVICE) Start(port, timeout int) {
+	pstr := fmt.Sprintf(":%d", port)
+	server := &http.Server{
+		Addr:         pstr,
+		WriteTimeout: time.Second * time.Duration(timeout),
+		Handler:      s.Mux,
+	}
 	server.ListenAndServe()
 }
