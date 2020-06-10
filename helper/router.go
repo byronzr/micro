@@ -1,12 +1,10 @@
-package handlers
+package helper
 
 import (
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
-
-	. "github.com/byronzr/micro/fundational"
 )
 
 type ROUTER struct{}
@@ -24,7 +22,7 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			// write response
 			w.Write(response)
 			s := time.Since(t)
-			Inf(furi, " t:", s)
+			Inf(method, " ", furi, " t:", s)
 			return
 		} else {
 			panic(err)
