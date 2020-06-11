@@ -5,10 +5,14 @@ import (
 	"fmt"
 )
 
-func DD(i interface{}) {
-	if content, err := json.MarshalIndent(i, "", "\t"); err != nil {
-		panic(err)
-	} else {
-		fmt.Println(fmt.Sprintf("\033[32m%s\033[0m", string(content)))
+func DD(o ...interface{}) {
+	buf := make([]byte, 0)
+	for idx, s := range o {
+		out, err := json.MarshalIndent(s, "", "\t")
+		if err != nil {
+			panic(err)
+		}
+		buf = append(buf, []byte(fmt.Sprintf("\n\033[33m----%02d----------------------------------------------\033[0m\n%s", idx, string(out)))...)
 	}
+	fmt.Println(string(buf))
 }
