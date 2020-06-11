@@ -1,9 +1,8 @@
 package handlers
-import(
 
+import (
 	"encoding/json"
 	"net/http"
-
 )
 
 type POST struct{}
@@ -15,6 +14,11 @@ func (POST) ReportThisweek(r *http.Request) (response []byte, err error) {
 }
 
 func (OPTIONS) ReportThisweek(r *http.Request) (response []byte, err error) {
+	msg := "POST.ReprotThisweek."
+	return json.Marshal(msg)
+}
+
+func (OPTIONS) REPORTThisWEEK(r *http.Request) (response []byte, err error) {
 	msg := "POST.ReprotThisweek."
 	return json.Marshal(msg)
 }

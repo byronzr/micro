@@ -38,3 +38,11 @@ func main() {
 // 	msg := "OPTIONS.ReprotThisweek."
 // 	return json.Marshal(&Response{Result: msg})
 // }
+
+// func Test_main(t *testing.T) {
+// 	str := "REPORTThisWEEK"
+// 	fixNameRe := regexp.MustCompile(`([A-Z]+?)`)
+// 	fixName := fixNameRe.FindStringSubmatch(str)
+// 	fmt.Println(fixName)
+
+// }

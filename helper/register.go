@@ -17,7 +17,6 @@ var (
 func RegisterHandler(h interface{}) {
 
 	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*http.Request\) \(\[]uint8, error\) Value>`)
-	fixNameRe := regexp.MustCompile(`([A-Z]+?)`)
 
 	t := reflect.TypeOf(h)
 	v := reflect.ValueOf(h)
@@ -34,14 +33,20 @@ func RegisterHandler(h interface{}) {
 		action := tys[2]
 
 		// 转换驼峰函数名为URI路径名
-		// TODO:
-		fixName := fixNameRe.FindStringSubmatch(method.Name)
-		Inf(fixName)
-
-		rawName := []byte(method.Name)
+		// 转换驼峰函数名为URI路径名
+		rawName := []byte(str)
+		lenName := len(rawName)
 		uriName := []byte{}
-		for _, b := range rawName {
-			if b >= 'A' && b <= 'Z' {
+		for idx, b := range rawName {
+			prefix := byte('a')
+			suffix := byte('A')
+			if idx > 0 {
+				prefix = rawName[idx-1]
+			}
+			if idx != lenName-1 {
+				suffix = rawName[idx+1]
+			}
+			if (up(b) && !up(prefix)) || (up(b) && !up(suffix)) {
 				uriName = append(uriName, '/')
 			}
 			uriName = append(uriName, b)
@@ -63,6 +68,9 @@ func RegisterHandler(h interface{}) {
 	}
 }
 
-// func RegisterHandler(h Action) {
-// 	h.Register()
-// }
+func up(c byte) bool {
+	if c >= 'A' && c <= 'Z' {
+		return true
+	}
+	return false
+}
