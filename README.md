@@ -15,7 +15,7 @@ import (
 func main() {
   // Register 注册需要处理的路由
   // Start 启动服务，监听端口与服务链接超时设置
-	micro.S.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+  micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
 }
 ```
 
