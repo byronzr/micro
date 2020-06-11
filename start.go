@@ -8,41 +8,12 @@ import (
 	"github.com/byronzr/micro/helper"
 )
 
-// type GET struct{}
-// type HEAD struct{}
-// type POST struct{}
-// type PUT struct{}
-// type PATCH struct{}
-// type DELETE struct{}
-// type TRACE struct{}
-// type OPTIONS struct{}
-
-// type Response struct {
-// 	Result interface{} `json:"result"`
-// }
-
-// func main() {
-// 	Start(GET{}, POST{})
-// }
-
-// func (GET) Check(r *http.Request) (response []byte, err error) {
-// 	msg := "GET.Check"
-// 	return json.Marshal(&Response{Result: msg})
-// }
-
-// func (POST) Check(r *http.Request) (response []byte, err error) {
-// 	msg := "POST.Check"
-// 	return json.Marshal(&Response{Result: msg})
-// }
 type SERVICE struct {
 	Mux *http.ServeMux
 }
 
-var (
-	S = &SERVICE{}
-)
-
-func (s *SERVICE) Register(hands ...interface{}) *SERVICE {
+func Register(hands ...interface{}) *SERVICE {
+	s := &SERVICE{}
 	if len(hands) == 0 {
 		helper.Inf("not handler register. service shutdown.")
 	}

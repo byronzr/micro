@@ -16,7 +16,7 @@ import (
 // type OPTIONS struct{}
 
 func main() {
-	micro.S.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+	micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
 }
 
 // func (GET) Check(r *http.Request) (response []byte, err error) {

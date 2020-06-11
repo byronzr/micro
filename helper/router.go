@@ -19,7 +19,6 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	target := fmt.Sprintf("%s %s", method, uri)
 	if fn, ok := ActionFuncMap[target]; ok {
 		if response, err := fn(r); err == nil {
-			// write response
 			w.Write(response)
 			s := time.Since(t)
 			Inf(method, " ", furi, " t:", s)
