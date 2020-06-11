@@ -2,6 +2,7 @@ package micro
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -33,5 +34,6 @@ func (s *SERVICE) Start(port, timeout int) {
 		WriteTimeout: time.Second * time.Duration(timeout),
 		Handler:      s.Mux,
 	}
-	server.ListenAndServe()
+	log.Fatal(server.ListenAndServe())
+
 }
