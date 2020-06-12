@@ -5,6 +5,8 @@ simple base RESTFUL framework
 # 粗暴的启动
 
 ```go
+
+
 package main
 
 import (
@@ -13,9 +15,24 @@ import (
 	"github.com/byronzr/micro"
 )
 func main() {
-  // Register 注册需要处理的路由
-  // Start 启动服务，监听端口与服务链接超时设置
-  micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+
+    // Register 注册需要处理的路由
+    // Start 启动服务，监听端口与服务链接超时设置
+    // micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+  
+    // example 1
+    // no prefix start
+    // micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+
+	// example 2
+	// has prefix start
+	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Prefix("byron").Start(8000, 10)
+
+	// example 3
+	// not chan call
+	service := micro.Register(handlers.POST{}, handlers.OPTIONS{}) // must be first
+	service.Prefix("byron")                                        // optional method
+	service.Start(8000, 10)
 }
 ```
 
