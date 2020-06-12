@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/byronzr/micro/helper"
 )
 
 type SERVICE struct {
-	Mux *http.ServeMux
+	Mux    *http.ServeMux
+	Prefix string
 }
 
 func Register(hands ...interface{}) *SERVICE {
@@ -27,7 +29,26 @@ func Register(hands ...interface{}) *SERVICE {
 	return s
 }
 
+func (s *SERVICE) Prefix(p string) *SERVICE {
+	prefix := []byte{}
+	if []byte(p)[0] != '/' {
+		prefix = []byte{'/'}
+	}
+	prefix = append(prefix, []byte(p)...)
+	s.Prefix = strings.ToLower(string(prefix))
+}
+
 func (s *SERVICE) Start(port, timeout int) {
+	// 如果包含前缀则在启动前，进行整理
+	if s.Prefix != "" {
+		prefix := fmt.Sprintf(" %s", s.Prefix)
+		newAction := make(map[string]func(*http.Request) ([]byte, error), 0)
+		for fn, key := range helper.ActionFuncMap {
+			newKey := strings.ReplaceAll(key, " ", prefix)
+			newAction[newKey] = fn
+		}
+		helper.ActionFuncMap = newAction
+	}
 	pstr := fmt.Sprintf(":%d", port)
 	server := &http.Server{
 		Addr:         pstr,
