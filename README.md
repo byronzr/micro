@@ -13,7 +13,7 @@ import (
 	"github.com/byronzr/micro"
 )
 func main() {
-    // example 1
+	// example 1
 	// no prefix start
 	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
 	// example 2
@@ -23,7 +23,6 @@ func main() {
 	// INF 2020/06/12 14:38:04 service start.
 	// INF 2020/06/12 14:38:04 >> registered >> POST /byron/report/thisweek
 	// INF 2020/06/12 14:38:04 >> registered >> OPTIONS /wl/report/this/week
-
 }
 ```
 # 粗暴的分组混合注册前缀
@@ -77,10 +76,8 @@ func (OPTIONS) ReportThisweek(r *http.Request) (response []byte, err error) {
 
 # 粗暴的路由转换
 将驼峰法则自动转换成路由 URL。
-
-  注： AbcdEfg => /abcd/efg 所以要注意 ABCDEFG => /a/b/c/e/d/f/g
-  
-  
+> REPORTThisweek => /report/thisweek
+> ReportThisweek => /report/thisweek
 ```bash
 INF 2020/06/10 21:01:46 >> registered >> POST /report/thisweek     # 自动将 ReportThisweek 首字母大写位置添加左竖线
 INF 2020/06/10 21:01:46 >> registered >> OPTIONS /report/thisweek
