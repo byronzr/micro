@@ -16,3 +16,4 @@
 .DS_Store
 go.mod
 go.sum
+start_test.go

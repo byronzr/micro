@@ -26,7 +26,7 @@ func main() {
 
 	// example 3
 	// not chan call
-	service := micro.Register(handlers.POST{}) // must be first
+	service := micro.Register(handlers.POST{}, handlers.OPTIONS{}) // must be first
 	service.Prefix("byron")
 	service.Start(8000, 10)
 }

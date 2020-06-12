@@ -50,6 +50,9 @@ func (s *SERVICE) Start(port, timeout int) {
 		}
 		helper.ActionFuncMap = newAction
 	}
+	for uri, _ := range helper.ActionFuncMap {
+		helper.Inf(">> registered >> ", uri)
+	}
 	pstr := fmt.Sprintf(":%d", port)
 	server := &http.Server{
 		Addr:         pstr,

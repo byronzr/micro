@@ -64,7 +64,7 @@ func RegisterHandler(h interface{}) {
 			}
 			return
 		}
-		Inf(">> registered >> ", uriKey)
+
 	}
 }
 
