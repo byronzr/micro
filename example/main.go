@@ -16,8 +16,19 @@ import (
 // type OPTIONS struct{}
 
 func main() {
-	micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
-	//micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+	// example 1
+	// no prefix start
+	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+
+	// example 2
+	// has prefix start
+	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Prefix("byron").Start(8000, 10)
+
+	// example 3
+	// not chan call
+	service := micro.Register(handlers.POST{}) // must be first
+	service.Prefix("byron")
+	service.Start(8000, 10)
 }
 
 // func (GET) Check(r *http.Request) (response []byte, err error) {

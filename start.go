@@ -11,8 +11,8 @@ import (
 )
 
 type SERVICE struct {
-	Mux    *http.ServeMux
-	Prefix string
+	Mux        *http.ServeMux
+	PrefixPath string
 }
 
 func Register(hands ...interface{}) *SERVICE {
@@ -35,15 +35,16 @@ func (s *SERVICE) Prefix(p string) *SERVICE {
 		prefix = []byte{'/'}
 	}
 	prefix = append(prefix, []byte(p)...)
-	s.Prefix = strings.ToLower(string(prefix))
+	s.PrefixPath = strings.ToLower(string(prefix))
+	return s
 }
 
 func (s *SERVICE) Start(port, timeout int) {
 	// 如果包含前缀则在启动前，进行整理
-	if s.Prefix != "" {
-		prefix := fmt.Sprintf(" %s", s.Prefix)
+	if s.PrefixPath != "" {
+		prefix := fmt.Sprintf(" %s", s.PrefixPath)
 		newAction := make(map[string]func(*http.Request) ([]byte, error), 0)
-		for fn, key := range helper.ActionFuncMap {
+		for key, fn := range helper.ActionFuncMap {
 			newKey := strings.ReplaceAll(key, " ", prefix)
 			newAction[newKey] = fn
 		}
