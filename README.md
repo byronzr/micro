@@ -13,20 +13,13 @@ import (
 	"github.com/byronzr/micro"
 )
 func main() {
-
     // example 1
 	// no prefix start
 	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
-
 	// example 2
-	// has prefix start
-	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Prefix("byron").Start(8000, 10)
-
-	// example 3
 	// not chan call
 	service := micro.Register("byron", handlers.POST{}, "wl", handlers.OPTIONS{}) // must be first
 	service.Start(8000, 10)
-    
 	// INF 2020/06/12 14:38:04 service start.
 	// INF 2020/06/12 14:38:04 >> registered >> POST /byron/report/thisweek
 	// INF 2020/06/12 14:38:04 >> registered >> OPTIONS /wl/report/this/week
