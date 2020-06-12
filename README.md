@@ -5,8 +5,6 @@ simple base RESTFUL framework
 # 粗暴的启动
 
 ```go
-
-
 package main
 
 import (
@@ -16,13 +14,9 @@ import (
 )
 func main() {
 
-    // Register 注册需要处理的路由
-    // Start 启动服务，监听端口与服务链接超时设置
-    // micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
-  
     // example 1
-    // no prefix start
-    // micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
+	// no prefix start
+	// micro.Register(handlers.POST{}, handlers.OPTIONS{}).Start(8000, 10)
 
 	// example 2
 	// has prefix start
@@ -30,8 +24,22 @@ func main() {
 
 	// example 3
 	// not chan call
-	service := micro.Register(handlers.POST{}, handlers.OPTIONS{}) // must be first
-	service.Prefix("byron")                                        // optional method
+	service := micro.Register("byron", handlers.POST{}, "wl", handlers.OPTIONS{}) // must be first
+	service.Start(8000, 10)
+    
+	// INF 2020/06/12 14:38:04 service start.
+	// INF 2020/06/12 14:38:04 >> registered >> POST /byron/report/thisweek
+	// INF 2020/06/12 14:38:04 >> registered >> OPTIONS /wl/report/this/week
+
+}
+```
+# 粗暴的分组混合注册前缀
+```go
+func main() {
+    // Register 方法提供任何时候进行分组
+    // 以下用例中 "byron" 注册后 handlers.POST中的所有路由自动加上 /byron 前缀
+    // 当遇到 wl 后，后续前缀为 /wl 前缀
+	service := micro.Register("byron", handlers.POST{}, "wl", handlers.OPTIONS{}) // must be first
 	service.Start(8000, 10)
 }
 ```

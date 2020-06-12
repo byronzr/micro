@@ -15,5 +15,6 @@ func (POST) ReportThisweek(r *http.Request) (response []byte, err error) {
 
 func (OPTIONS) REPORTThisWEEK(r *http.Request) (response []byte, err error) {
 	msg := "POST.ReprotThisweek."
+	panic(msg)
 	return json.Marshal(msg)
 }

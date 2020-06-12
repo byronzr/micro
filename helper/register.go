@@ -12,14 +12,26 @@ import (
 
 var (
 	ActionFuncMap = make(map[string]func(*http.Request) ([]byte, error), 0)
+	patchPrefix   = ""
 )
 
 func RegisterHandler(h interface{}) {
 
-	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*http.Request\) \(\[]uint8, error\) Value>`)
-
 	t := reflect.TypeOf(h)
 	v := reflect.ValueOf(h)
+
+	// 分组边界前缀
+	if t.Kind() == reflect.String {
+		str := v.Interface().(string)
+		if !strings.HasPrefix(str, "/") {
+			patchPrefix = fmt.Sprintf("/%s", str)
+		} else {
+			patchPrefix = str
+		}
+		return
+	}
+	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*http.Request\) \(\[]uint8, error\) Value>`)
+
 	methodCount := t.NumMethod()
 	for i := 0; i < methodCount; i++ {
 		uriKey := ""
@@ -51,7 +63,7 @@ func RegisterHandler(h interface{}) {
 			}
 			uriName = append(uriName, b)
 		}
-		uriKey = fmt.Sprintf("%s %s", action, strings.ToLower(string(uriName)))
+		uriKey = fmt.Sprintf("%s %s%s", action, patchPrefix, strings.ToLower(string(uriName)))
 
 		// TODO: 未来泛型优化
 		ActionFuncMap[uriKey] = func(r *http.Request) (result []byte, err error) {

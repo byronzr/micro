@@ -26,9 +26,11 @@ func main() {
 
 	// example 3
 	// not chan call
-	service := micro.Register(handlers.POST{}, handlers.OPTIONS{}) // must be first
-	service.Prefix("byron")
+	service := micro.Register("byron", handlers.POST{}, "wl", handlers.OPTIONS{}) // must be first
 	service.Start(8000, 10)
+	// INF 2020/06/12 14:38:04 service start.
+	// INF 2020/06/12 14:38:04 >> registered >> POST /byron/report/thisweek
+	// INF 2020/06/12 14:38:04 >> registered >> OPTIONS /wl/report/this/week
 }
 
 // func (GET) Check(r *http.Request) (response []byte, err error) {

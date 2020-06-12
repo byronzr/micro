@@ -40,16 +40,6 @@ func (s *SERVICE) Prefix(p string) *SERVICE {
 }
 
 func (s *SERVICE) Start(port, timeout int) {
-	// 如果包含前缀则在启动前，进行整理
-	if s.PrefixPath != "" {
-		prefix := fmt.Sprintf(" %s", s.PrefixPath)
-		newAction := make(map[string]func(*http.Request) ([]byte, error), 0)
-		for key, fn := range helper.ActionFuncMap {
-			newKey := strings.ReplaceAll(key, " ", prefix)
-			newAction[newKey] = fn
-		}
-		helper.ActionFuncMap = newAction
-	}
 	for uri, _ := range helper.ActionFuncMap {
 		helper.Inf(">> registered >> ", uri)
 	}
