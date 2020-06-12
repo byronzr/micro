@@ -34,7 +34,7 @@ func RegisterHandler(h interface{}) {
 
 		// 转换驼峰函数名为URI路径名
 		// 转换驼峰函数名为URI路径名
-		rawName := []byte(str)
+		rawName := []byte(method.Name)
 		lenName := len(rawName)
 		uriName := []byte{}
 		for idx, b := range rawName {
