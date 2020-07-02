@@ -9,15 +9,42 @@ import (
 
 type ROUTER struct{}
 
+// middle function call on before
+type BeforeCall interface {
+	Before(*http.Request) (interface{}, bool)
+}
+
+// middle function call
+type AfterCall interface {
+	After(*http.Request) (interface{}, bool)
+}
+
 func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t := time.Now()
 
 	uri := strings.ToLower(r.URL.Path)
 	method := strings.ToUpper(r.Method)
+	bf := fmt.Sprintf("before.%s", method)
+	af := fmt.Sprintf("after.%s", method)
 	furi := r.URL.RequestURI()
 
 	target := fmt.Sprintf("%s %s", method, uri)
 	if fn, ok := ActionFuncMap[target]; ok {
+		// MIDDLE BEFORE
+		if f, ok := MiddleFuncMap["GLOBAL_BEFORE"]; ok {
+			if _, ok := f(r); !ok {
+				Wrn("halt on Middle Global before")
+				return
+			}
+		}
+		if f, ok := MiddleFuncMap[bf]; ok {
+			if _, ok := f(r); !ok {
+				Wrn("halt on Middle before ", method)
+				return
+			}
+		}
+
+		// run serve http
 		if response, err := fn(r); err == nil {
 			// write header
 			resp := r.Response
@@ -35,12 +62,21 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				panic(err)
 			}
+
 			s := time.Since(t)
 			Inf(method, " ", furi, " write:", ret, " t:", s)
-			return
 		} else {
 			panic(err)
 		}
+
+		// MIDDLE AFTER
+		if f, ok := MiddleFuncMap["GLOBAL_AFTER"]; ok {
+			f(r)
+		}
+		if f, ok := MiddleFuncMap[af]; ok {
+			f(r)
+		}
+		return
 	}
 
 	Err(furi, " ", method, " ", " NOT FOUND ")

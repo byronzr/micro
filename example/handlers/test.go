@@ -31,3 +31,8 @@ func (OPTIONS) REPORTThisWEEK(r *http.Request) (response []byte, err error) {
 	panic(msg)
 	return json.Marshal(msg)
 }
+
+func (OPTIONS) Before(r *http.Request) (interface{}, bool) {
+	fmt.Println("i'm halt on before <options>")
+	return nil, false
+}

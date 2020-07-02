@@ -1,13 +1,17 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"test/handlers"
 
 	"github.com/byronzr/micro"
 )
 
 // request method set
-//type GET struct{}
+type GET struct{}
+
 // type HEAD struct{}
 // type PUT struct{}
 // type PATCH struct{}
@@ -26,17 +30,37 @@ func main() {
 
 	// example 3
 	// not chan call
-	service := micro.Register("byron", handlers.POST{}, "wl", handlers.OPTIONS{}) // must be first
+	service := micro.Register(GET{}, "byron", handlers.POST{}, "wl", handlers.OPTIONS{}) // must be first
+
+	// add middle hook on before
+	before := func(r *http.Request) (interface{}, bool) {
+		fmt.Println("i'm running before <global>")
+		return nil, true
+	}
+	service.Before(before)
+
+	// add middle hook on before
+	after := func(r *http.Request) (interface{}, bool) {
+		fmt.Println("i'm running after <global>")
+		return nil, true
+	}
+	service.After(after)
+
 	service.Start(8000, 10)
 	// INF 2020/06/12 14:38:04 service start.
 	// INF 2020/06/12 14:38:04 >> registered >> POST /byron/report/thisweek
 	// INF 2020/06/12 14:38:04 >> registered >> OPTIONS /wl/report/this/week
 }
 
-// func (GET) Check(r *http.Request) (response []byte, err error) {
-// 	msg := "GET.Check"
-// 	return json.Marshal(msg)
-// }
+func (GET) Check(r *http.Request) (response []byte, err error) {
+	msg := "GET.Check"
+	return json.Marshal(msg)
+}
+
+func (GET) Before(r *http.Request) (interface{}, bool) {
+	fmt.Println("i'm running before <get>")
+	return nil, true
+}
 
 // func (GET) ReportThisweek(r *http.Request) (response []byte, err error) {
 // 	msg := "GET.ReprotThisweek."

@@ -12,10 +12,28 @@ import (
 
 var (
 	ActionFuncMap = make(map[string]func(*http.Request) ([]byte, error), 0)
+	MiddleFuncMap = make(map[string]func(*http.Request) (interface{}, bool), 0)
 	patchPrefix   = ""
 )
 
 func RegisterHandler(h interface{}) {
+
+	// init middle register
+	if mf, ok := h.(BeforeCall); ok {
+		structname := fmt.Sprintf("%#v", mf)
+		names := strings.Split(strings.Trim(structname, "{}"), ".")
+		method := fmt.Sprintf("before.%s", names[len(names)-1])
+		MiddleFuncMap[method] = mf.Before
+		Wrn(">> MIDDLE BEFORE >> ", method)
+	}
+
+	if mf, ok := h.(AfterCall); ok {
+		structname := fmt.Sprintf("%#v", mf)
+		names := strings.Split(strings.Trim(structname, "{}"), ".")
+		method := fmt.Sprintf("after.%s", names[len(names)-1])
+		MiddleFuncMap[method] = mf.After
+		Wrn(">> MIDDLE AFTER >> ", method)
+	}
 
 	t := reflect.TypeOf(h)
 	v := reflect.ValueOf(h)
@@ -39,7 +57,6 @@ func RegisterHandler(h interface{}) {
 
 		tys := re.FindStringSubmatch(method.Func.String())
 		if len(tys) < 2 {
-			Inf(">> continue >> ", method.Func.String(), " >> ", method.Name)
 			continue
 		}
 		action := tys[2]

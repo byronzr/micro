@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 	"time"
 
 	"github.com/byronzr/micro/helper"
@@ -15,6 +14,7 @@ type SERVICE struct {
 	PrefixPath string
 }
 
+// register handlers
 func Register(hands ...interface{}) *SERVICE {
 	s := &SERVICE{}
 	if len(hands) == 0 {
@@ -23,22 +23,26 @@ func Register(hands ...interface{}) *SERVICE {
 	for _, h := range hands {
 		helper.RegisterHandler(h)
 	}
-	helper.Inf("service start.")
 	s.Mux = http.NewServeMux()
 	s.Mux.Handle("/", helper.ROUTER{})
 	return s
 }
 
-func (s *SERVICE) Prefix(p string) *SERVICE {
-	prefix := []byte{}
-	if []byte(p)[0] != '/' {
-		prefix = []byte{'/'}
-	}
-	prefix = append(prefix, []byte(p)...)
-	s.PrefixPath = strings.ToLower(string(prefix))
+// global before call
+func (s *SERVICE) Before(f func(*http.Request) (interface{}, bool)) *SERVICE {
+	helper.MiddleFuncMap["GLOBAL_BEFORE"] = f
+	helper.Wrn(">> MIDDLE BEFORE >> GLOBAL ")
 	return s
 }
 
+// global after call
+func (s *SERVICE) After(f func(*http.Request) (interface{}, bool)) *SERVICE {
+	helper.MiddleFuncMap["GLOBAL_AFTER"] = f
+	helper.Wrn(">> MIDDLE AFTER >> GLOBAL ")
+	return s
+}
+
+// service start
 func (s *SERVICE) Start(port, timeout int) {
 	for uri, _ := range helper.ActionFuncMap {
 		helper.Inf(">> registered >> ", uri)
@@ -49,6 +53,7 @@ func (s *SERVICE) Start(port, timeout int) {
 		WriteTimeout: time.Second * time.Duration(timeout),
 		Handler:      s.Mux,
 	}
+	helper.Inf(":::::: service start ::::::")
 	log.Fatal(server.ListenAndServe())
 
 }
