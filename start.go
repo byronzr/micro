@@ -10,8 +10,7 @@ import (
 )
 
 type SERVICE struct {
-	Mux        *http.ServeMux
-	PrefixPath string
+	Mux *http.ServeMux
 }
 
 // register handlers
