@@ -8,12 +8,13 @@ import (
 )
 
 func Inf(msg ...interface{}) {
+	//logger := log.New(os.Stdout, "\033[32mINF\033[0m ", log.LstdFlags)
 	logger := log.New(os.Stdout, "\033[32mINF\033[0m ", log.LstdFlags)
 	logger.Print(msg...)
 }
 
 func PPP(msg ...interface{}) {
-	logger := log.New(os.Stdout, "/// ", log.LstdFlags)
+	logger := log.New(os.Stdout, "\033[05m///\033[0m ", log.LstdFlags)
 	logger.Print(msg...)
 }
 

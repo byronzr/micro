@@ -19,9 +19,24 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	target := fmt.Sprintf("%s %s", method, uri)
 	if fn, ok := ActionFuncMap[target]; ok {
 		if response, err := fn(r); err == nil {
-			w.Write(response)
+			// write header
+			resp := r.Response
+			if resp != nil && len(resp.Header) > 0 {
+				h := w.Header()
+				for k, vs := range resp.Header {
+					for _, v := range vs {
+						h.Add(k, v)
+					}
+				}
+			}
+
+			// write response
+			ret, err := w.Write(response)
+			if err != nil {
+				panic(err)
+			}
 			s := time.Since(t)
-			Inf(method, " ", furi, " t:", s)
+			Inf(method, " ", furi, " write:", ret, " t:", s)
 			return
 		} else {
 			panic(err)
