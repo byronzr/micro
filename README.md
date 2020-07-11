@@ -182,9 +182,21 @@ func (GET) Check(r *http.Request) (response []byte, err error) {
 // 局部中间件的注册范例
 func (GET) Before(r *http.Request) (interface{}, bool) {
 	fmt.Println("i'm running before <get>")
+    // interface{} 会以sync.Map的方式存储，支持并发
+    // bool, ture  = 执行到业务方法中
+    // bool, false = 中断，无提示 
 	return nil, true
 }
+
+// 业务流程获取中间件计算结果的方法
+func (OPTIONS) Middata(r *http.Request) (response []byte, err error) {
+	v := helper.MidData(r)
+	fmt.Println("mid data:", v)
+	return json.Marshal(v)
+}
 ```
+
+
 调用顺序可见
 ```bash
 WRN 2020/07/02 15:18:52 >> MIDDLE BEFORE >> before.GET

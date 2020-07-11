@@ -39,3 +39,10 @@ func HeaderSet(r *http.Request, key, value string) {
 	HeaderInit(r)
 	r.Response.Header.Set(key, value)
 }
+
+func MidData(r *http.Request) interface{} {
+	if rs, ok := data.Load(r.RemoteAddr); ok {
+		return rs
+	}
+	return nil
+}

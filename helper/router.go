@@ -4,7 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
+)
+
+var (
+	data = sync.Map{}
 )
 
 type ROUTER struct{}
@@ -32,17 +37,27 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if fn, ok := ActionFuncMap[target]; ok {
 		// MIDDLE BEFORE
 		if f, ok := MiddleFuncMap["GLOBAL_BEFORE"]; ok {
-			if _, ok := f(r); !ok {
+			if rs, ok := f(r); !ok {
 				Wrn("halt on Middle Global before")
 				return
+			} else {
+				data.Store(r.RemoteAddr, rs)
 			}
 		}
 		if f, ok := MiddleFuncMap[bf]; ok {
-			if _, ok := f(r); !ok {
+			if rs, ok := f(r); !ok {
 				Wrn("halt on Middle before ", method)
 				return
+			} else {
+				data.Store(r.RemoteAddr, rs)
 			}
 		}
+		// clear sync.Map
+		defer func() {
+			if _, ok := data.Load(r.RemoteAddr); ok {
+				data.Delete(r.RemoteAddr)
+			}
+		}()
 
 		// run serve http
 		if response, err := fn(r); err == nil {
