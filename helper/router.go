@@ -27,7 +27,7 @@ type AfterCall interface {
 func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t := time.Now()
 
-	uri := strings.ToLower(r.URL.Path)
+	uri := strings.TrimRight(strings.ToLower(r.URL.Path), "/")
 	method := strings.ToUpper(r.Method)
 	bf := fmt.Sprintf("before.%s", method)
 	af := fmt.Sprintf("after.%s", method)
