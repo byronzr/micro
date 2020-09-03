@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/byronzr/micro/helper"
+	"github.com/byronzr/micro.v2/helper"
 	"github.com/modood/table"
 )
 

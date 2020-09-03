@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"test/handlers"
 
-	"github.com/byronzr/micro"
-	"github.com/byronzr/micro/helper"
+	"github.com/byronzr/micro.v2"
+	"github.com/byronzr/micro.v2/helper"
 )
 
 // request method set
