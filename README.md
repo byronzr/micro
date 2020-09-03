@@ -17,8 +17,8 @@ import (
 	"net/http"
 	"test/handlers"
 
-	"github.com/byronzr/micro"
-	"github.com/byronzr/micro/helper"
+	"github.com/byronzr/micro.v2"
+	"github.com/byronzr/micro.v2/helper"/'/'
 )
 
 // 定义一个请求方式

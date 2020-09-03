@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/byronzr/micro.v2/helper"
+	"gopkg.in/byronzr/micro.v2/helper"
 )
 
 type POST struct{}

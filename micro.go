@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/byronzr/micro.v2/helper"
 	"github.com/modood/table"
+	"gopkg.in/byronzr/micro.v2/helper"
 )
 
 type SERVICE struct {
