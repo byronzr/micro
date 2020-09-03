@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/modood/table"
-	"gopkg.in/byronzr/micro.v2/helper"
+	"github.com/byronzr/micro/helper"
 )
 
 type SERVICE struct {

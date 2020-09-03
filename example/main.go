@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"test/handlers"
 
-	"gopkg.in/byronzr/micro.v2"
-	"gopkg.in/byronzr/micro.v2/helper"
+	"github.com/byronzr/micro"
+	"github.com/byronzr/micro/helper"
 )
 
 // request method set

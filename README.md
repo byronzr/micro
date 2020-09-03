@@ -1,10 +1,5 @@
-# micro V2
+# micro
 simple base RESTFUL framework
-简单粗暴的快速构建微服务脚手架 micro。别跟我说什么性能，并发，优化，老夫业务流程，数据分析从来不考虑这些重构的事。再说，性能也不差。
-
-+ 使中间件值可连续传递
-+ Handler 的函数写法更精练
-+ 更友好的启动注册说明
 
 # Quick Start
 
