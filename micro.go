@@ -6,11 +6,17 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/modood/table"
 	"github.com/byronzr/micro/helper"
 )
 
 type SERVICE struct {
 	Mux *http.ServeMux
+}
+
+type TableInfo struct {
+	Type     string
+	Register string
 }
 
 // register handlers
@@ -28,31 +34,41 @@ func Register(hands ...interface{}) *SERVICE {
 }
 
 // global before call
-func (s *SERVICE) Before(f func(*http.Request) (interface{}, bool)) *SERVICE {
-	helper.MiddleFuncMap["GLOBAL_BEFORE"] = f
-	helper.Wrn(">> MIDDLE BEFORE >> GLOBAL ")
+func (s *SERVICE) Before(f func(*helper.MicroRequest) bool) *SERVICE {
+	helper.MiddleFuncMap["GLB before"] = f
 	return s
 }
 
 // global after call
-func (s *SERVICE) After(f func(*http.Request) (interface{}, bool)) *SERVICE {
-	helper.MiddleFuncMap["GLOBAL_AFTER"] = f
-	helper.Wrn(">> MIDDLE AFTER >> GLOBAL ")
+func (s *SERVICE) After(f func(*helper.MicroRequest) bool) *SERVICE {
+	helper.MiddleFuncMap["GLB after"] = f
 	return s
 }
 
 // service start
 func (s *SERVICE) Start(port, timeout int) {
-	for uri, _ := range helper.ActionFuncMap {
-		helper.Inf(">> registered >> ", uri)
+
+	inf := []TableInfo{}
+
+	for mid, _ := range helper.MiddleFuncMap {
+		inf = append(inf, TableInfo{"MIDDLE", mid})
 	}
+
+	for uri, _ := range helper.ActionFuncMap {
+		inf = append(inf, TableInfo{"ACTION", uri})
+	}
+
+	table.Output(inf)
+
 	pstr := fmt.Sprintf(":%d", port)
 	server := &http.Server{
 		Addr:         pstr,
 		WriteTimeout: time.Second * time.Duration(timeout),
 		Handler:      s.Mux,
 	}
-	helper.Inf(":::::: service start ::::::")
+
+	msg := fmt.Sprintf(":::::: service [ %d ] start ::::::", port)
+	helper.Inf(msg)
 	log.Fatal(server.ListenAndServe())
 
 }
