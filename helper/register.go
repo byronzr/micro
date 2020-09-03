@@ -8,11 +8,17 @@ import (
 	"strings"
 )
 
-// request method set
+type MicroRequest struct {
+	R *http.Request
+	W http.ResponseWriter
+	M *Middle
+}
 
+// request method set
 var (
-	ActionFuncMap = make(map[string]func(*http.Request) ([]byte, error), 0)
-	MiddleFuncMap = make(map[string]func(*http.Request) (interface{}, bool), 0)
+	// V2
+	ActionFuncMap = make(map[string]func(*MicroRequest) int, 0)
+	MiddleFuncMap = make(map[string]func(*MicroRequest) bool, 0)
 	patchPrefix   = ""
 )
 
@@ -22,17 +28,15 @@ func RegisterHandler(h interface{}) {
 	if mf, ok := h.(BeforeCall); ok {
 		structname := fmt.Sprintf("%#v", mf)
 		names := strings.Split(strings.Trim(structname, "{}"), ".")
-		method := fmt.Sprintf("before.%s", names[len(names)-1])
+		method := fmt.Sprintf("%s before", names[len(names)-1])
 		MiddleFuncMap[method] = mf.Before
-		Wrn(">> MIDDLE BEFORE >> ", method)
 	}
 
 	if mf, ok := h.(AfterCall); ok {
 		structname := fmt.Sprintf("%#v", mf)
 		names := strings.Split(strings.Trim(structname, "{}"), ".")
-		method := fmt.Sprintf("after.%s", names[len(names)-1])
+		method := fmt.Sprintf("%s after", names[len(names)-1])
 		MiddleFuncMap[method] = mf.After
-		Wrn(">> MIDDLE AFTER >> ", method)
 	}
 
 	t := reflect.TypeOf(h)
@@ -48,12 +52,16 @@ func RegisterHandler(h interface{}) {
 		}
 		return
 	}
-	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*http.Request\) \(\[]uint8, error\) Value>`)
+
+	// V2
+	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*helper.MicroRequest\) int Value>`)
 
 	methodCount := t.NumMethod()
 	for i := 0; i < methodCount; i++ {
 		uriKey := ""
 		method := t.Method(i)
+
+		//PPP(method.Name, "==", method.Func.String())
 
 		tys := re.FindStringSubmatch(method.Func.String())
 		if len(tys) < 2 {
@@ -83,15 +91,12 @@ func RegisterHandler(h interface{}) {
 		uriKey = fmt.Sprintf("%s %s%s", action, patchPrefix, strings.ToLower(string(uriName)))
 
 		// TODO: 未来泛型优化
-		ActionFuncMap[uriKey] = func(r *http.Request) (result []byte, err error) {
-			rs := method.Func.Call([]reflect.Value{v, reflect.ValueOf(r)})
+		ActionFuncMap[uriKey] = func(m *MicroRequest) int {
+			rs := method.Func.Call([]reflect.Value{v, reflect.ValueOf(m)})
 			if rs[0].Interface() != nil {
-				result = rs[0].Interface().([]byte)
+				return rs[0].Interface().(int)
 			}
-			if rs[1].Interface() != nil {
-				err = rs[1].Interface().(error)
-			}
-			return
+			return 0
 		}
 
 	}

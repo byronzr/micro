@@ -4,92 +4,65 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"sync"
 	"time"
-)
-
-var (
-	data = sync.Map{}
 )
 
 type ROUTER struct{}
 
 // middle function call on before
 type BeforeCall interface {
-	Before(*http.Request) (interface{}, bool)
+	Before(*MicroRequest) bool
 }
 
 // middle function call
 type AfterCall interface {
-	After(*http.Request) (interface{}, bool)
+	After(*MicroRequest) bool
 }
 
 func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	t := time.Now()
 
+	// middle store
+	mr := &MicroRequest{r, w, &Middle{}}
+
 	uri := strings.TrimRight(strings.ToLower(r.URL.Path), "/")
 	method := strings.ToUpper(r.Method)
-	bf := fmt.Sprintf("before.%s", method)
-	af := fmt.Sprintf("after.%s", method)
+
+	// middle name
+	bf := fmt.Sprintf("%s before", method)
+	af := fmt.Sprintf("%s after", method)
+
 	furi := r.URL.RequestURI()
 
 	target := fmt.Sprintf("%s %s", method, uri)
 	if fn, ok := ActionFuncMap[target]; ok {
-		// MIDDLE BEFORE
-		if f, ok := MiddleFuncMap["GLOBAL_BEFORE"]; ok {
-			if rs, ok := f(r); !ok {
-				Wrn("halt on Middle Global before")
+		// GLOBAL MIDDLE BEFORE
+		if f, ok := MiddleFuncMap["GLB before"]; ok {
+			if ok := f(mr); !ok {
+				// Wrn("halt on global Middle before")
 				return
-			} else {
-				data.Store(r.RemoteAddr, rs)
 			}
 		}
+		// PARTIAL BEFORE
 		if f, ok := MiddleFuncMap[bf]; ok {
-			if rs, ok := f(r); !ok {
-				Wrn("halt on Middle before ", method)
+			if ok := f(mr); !ok {
+				// Wrn("halt on partial Middle before ", method)
 				return
-			} else {
-				data.Store(r.RemoteAddr, rs)
 			}
 		}
-		// clear sync.Map
-		defer func() {
-			if _, ok := data.Load(r.RemoteAddr); ok {
-				data.Delete(r.RemoteAddr)
-			}
-		}()
 
 		// run serve http
-		if response, err := fn(r); err == nil {
-			// write header
-			resp := r.Response
-			if resp != nil && len(resp.Header) > 0 {
-				h := w.Header()
-				for k, vs := range resp.Header {
-					for _, v := range vs {
-						h.Add(k, v)
-					}
-				}
-			}
+		lenOfContents := fn(mr)
 
-			// write response
-			ret, err := w.Write(response)
-			if err != nil {
-				panic(err)
-			}
-
-			s := time.Since(t)
-			Inf(method, " ", furi, " write:", ret, " t:", s)
-		} else {
-			panic(err)
-		}
+		s := time.Since(t)
+		Inf(method, " ", furi, " write:", PackSize(lenOfContents, "b"), " t:", s)
 
 		// MIDDLE AFTER
-		if f, ok := MiddleFuncMap["GLOBAL_AFTER"]; ok {
-			f(r)
+		if f, ok := MiddleFuncMap["GLB after"]; ok {
+			f(mr)
 		}
 		if f, ok := MiddleFuncMap[af]; ok {
-			f(r)
+			f(mr)
 		}
 		return
 	}
@@ -103,4 +76,19 @@ func (ROUTER) CrossHeader(w http.ResponseWriter) {
 	w.Header().Add("Access-Control-Allow-Origin", "*")
 	w.Header().Add("Access-Control-Allow-Headers", "Accept,Origin,XRequestedWith,Content-Type,LastModified,DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Authorization")
 	w.Header().Add("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS, DELETE")
+}
+
+// auto covert content length B/KB/MB/GB/TB
+func PackSize(v int, uint string) string {
+	us := map[string]string{"b": "kb", "kb": "mb", "mb": "gb", "gb": "tb"}
+
+	if v < 1024 {
+		return fmt.Sprintf("%d%s", v, uint)
+	}
+	nv := v / 1024
+	if nv >= 1024 {
+		return PackSize(nv, us[uint])
+	} else {
+		return fmt.Sprintf("%d%s", nv, us[uint])
+	}
 }
