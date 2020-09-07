@@ -1,10 +1,11 @@
-package helper
+package micro
 
 import (
 	"fmt"
 	"log"
 	"os"
 	"runtime"
+	"encoding/json"
 )
 
 func Inf(msg ...interface{}) {
@@ -29,4 +30,16 @@ func Err(msg ...interface{}) {
 	nmsg := []interface{}{fmt.Sprintf("%s:%d\n", file, line)}
 	nmsg = append(nmsg, msg...)
 	logger.Print(nmsg...)
+}
+
+func DD(o ...interface{}) {
+	buf := make([]byte, 0)
+	for idx, s := range o {
+		out, err := json.MarshalIndent(s, "", "\t")
+		if err != nil {
+			panic(err)
+		}
+		buf = append(buf, []byte(fmt.Sprintf("\n\033[33m----%02d----------------------------------------------\033[0m\n%s", idx, string(out)))...)
+	}
+	fmt.Println(string(buf))
 }

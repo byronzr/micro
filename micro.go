@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/modood/table"
-	"github.com/byronzr/micro/helper"
 )
 
 type SERVICE struct {
@@ -23,25 +22,25 @@ type TableInfo struct {
 func Register(hands ...interface{}) *SERVICE {
 	s := &SERVICE{}
 	if len(hands) == 0 {
-		helper.Inf("not handler register. service shutdown.")
+		Inf("not handler register. service shutdown.")
 	}
 	for _, h := range hands {
-		helper.RegisterHandler(h)
+		RegisterHandler(h)
 	}
 	s.Mux = http.NewServeMux()
-	s.Mux.Handle("/", helper.ROUTER{})
+	s.Mux.Handle("/", ROUTER{})
 	return s
 }
 
 // global before call
-func (s *SERVICE) Before(f func(*helper.MicroRequest) bool) *SERVICE {
-	helper.MiddleFuncMap["GLB before"] = f
+func (s *SERVICE) Before(f func(*MicroRequest) bool) *SERVICE {
+	MiddleFuncMap["GLOBAL before"] = f
 	return s
 }
 
 // global after call
-func (s *SERVICE) After(f func(*helper.MicroRequest) bool) *SERVICE {
-	helper.MiddleFuncMap["GLB after"] = f
+func (s *SERVICE) After(f func(*MicroRequest) bool) *SERVICE {
+	MiddleFuncMap["GLOBAL after"] = f
 	return s
 }
 
@@ -50,11 +49,11 @@ func (s *SERVICE) Start(port, timeout int) {
 
 	inf := []TableInfo{}
 
-	for mid, _ := range helper.MiddleFuncMap {
+	for mid, _ := range MiddleFuncMap {
 		inf = append(inf, TableInfo{"MIDDLE", mid})
 	}
 
-	for uri, _ := range helper.ActionFuncMap {
+	for uri, _ := range ActionFuncMap {
 		inf = append(inf, TableInfo{"ACTION", uri})
 	}
 
@@ -68,7 +67,7 @@ func (s *SERVICE) Start(port, timeout int) {
 	}
 
 	msg := fmt.Sprintf(":::::: service [ %d ] start ::::::", port)
-	helper.Inf(msg)
+	Inf(msg)
 	log.Fatal(server.ListenAndServe())
 
 }

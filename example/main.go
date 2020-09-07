@@ -7,7 +7,6 @@ import (
 	"test/handlers"
 
 	"github.com/byronzr/micro"
-	"github.com/byronzr/micro/helper"
 )
 
 // request method set
@@ -15,11 +14,11 @@ type GET struct{}
 
 func main() {
 	service := micro.Register(GET{}, "byron", handlers.POST{}) // must be first
-	bf := func(m *helper.MicroRequest) bool {
+	bf := func(m *micro.MicroRequest) bool {
 		fmt.Println("i'm running before <GLB>")
 		return true
 	}
-	af := func(m *helper.MicroRequest) bool {
+	af := func(m *micro.MicroRequest) bool {
 		fmt.Println("i'm running after <GLB>")
 		return true
 	}
@@ -37,7 +36,7 @@ func (GET) Check(r *http.Request) (response []byte, err error) {
 }
 
 // 局部中间件
-func (GET) Before(m *helper.MicroRequest) bool {
+func (GET) Before(m *micro.MicroRequest) bool {
 	// 设置与传递值
 	mid := m.M.Before()
 	mid.Set("value from partial get.")
@@ -45,7 +44,7 @@ func (GET) Before(m *helper.MicroRequest) bool {
 	return true
 }
 
-func (GET) After(m *helper.MicroRequest) bool {
+func (GET) After(m *micro.MicroRequest) bool {
 	// 获取中间件的传递值
 	mid := m.M.Before()
 	v, ok := mid.Value()
@@ -56,7 +55,7 @@ func (GET) After(m *helper.MicroRequest) bool {
 }
 
 // 常规 handler
-func (GET) FullCheck(m *helper.MicroRequest) int {
+func (GET) FullCheck(m *micro.MicroRequest) int {
 	content := "fulll check."
 	l, err := m.W.Write([]byte(content))
 	if err != nil {

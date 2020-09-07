@@ -1,4 +1,4 @@
-package helper
+package micro
 
 import (
 	"fmt"
@@ -37,7 +37,7 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	target := fmt.Sprintf("%s %s", method, uri)
 	if fn, ok := ActionFuncMap[target]; ok {
 		// GLOBAL MIDDLE BEFORE
-		if f, ok := MiddleFuncMap["GLB before"]; ok {
+		if f, ok := MiddleFuncMap["GLOBAL before"]; ok {
 			if ok := f(mr); !ok {
 				// Wrn("halt on global Middle before")
 				return
@@ -58,7 +58,7 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Inf(method, " ", furi, " write:", PackSize(lenOfContents, "b"), " t:", s)
 
 		// MIDDLE AFTER
-		if f, ok := MiddleFuncMap["GLB after"]; ok {
+		if f, ok := MiddleFuncMap["GLOBAL after"]; ok {
 			f(mr)
 		}
 		if f, ok := MiddleFuncMap[af]; ok {

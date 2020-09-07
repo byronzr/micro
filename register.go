@@ -1,4 +1,4 @@
-package helper
+package micro
 
 import (
 	"fmt"
@@ -54,14 +54,14 @@ func RegisterHandler(h interface{}) {
 	}
 
 	// V2
-	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*helper.MicroRequest\) int Value>`)
+	re := regexp.MustCompile(`<func\((\S+?)\.([A-Z]+?), \*micro.MicroRequest\) int Value>`)
 
 	methodCount := t.NumMethod()
 	for i := 0; i < methodCount; i++ {
 		uriKey := ""
 		method := t.Method(i)
 
-		//PPP(method.Name, "==", method.Func.String())
+		// PPP(method.Name, "==", method.Func.String())
 
 		tys := re.FindStringSubmatch(method.Func.String())
 		if len(tys) < 2 {
