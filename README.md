@@ -76,20 +76,17 @@ func (GET) FullCheck(m *micro.MicroRequest) int {
 
 ```shell
 ➜  example git:(V2) ✗ go run main.go
+➜  example git:(master) ✗ go run main.go
 ┌────────┬─────────────────────────────┐
 │ Type   │ Register                    │
 ├────────┼─────────────────────────────┤
+│ MIDDLE │ GLOBAL after                │
 │ MIDDLE │ GET before                  │
 │ MIDDLE │ GET after                   │
-│ MIDDLE │ GLB before                  │
-│ MIDDLE │ GLB after                   │
+│ MIDDLE │ GLOBAL before               │
 │ ACTION │ GET /full/check             │
 │ ACTION │ POST /byron/report/thisweek │
 └────────┴─────────────────────────────┘
-INF 2020/09/03 12:04:18 :::::: service [ 8000 ] start ::::::
-i'm running before <GLB>
-INF 2020/09/03 12:04:23 GET /full/check write:12b t:45.292µs
-i'm running after <GLB>
-after: value from partial get.
+INF 2020/09/07 10:24:03 :::::: service [ 8000 ] start ::::::
 ```
 
