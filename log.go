@@ -28,7 +28,9 @@ func Err(msg ...interface{}) {
 	_, file, line, _ := runtime.Caller(1)
 	logger := log.New(os.Stdout, "\033[31mERR\033[0m ", log.LstdFlags)
 	nmsg := []interface{}{fmt.Sprintf("%s:%d\n", file, line)}
+	nmsg = append(nmsg, "\033[31m")
 	nmsg = append(nmsg, msg...)
+	nmsg = append(nmsg,"\033[0m")
 	logger.Print(nmsg...)
 }
 
