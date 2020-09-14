@@ -65,6 +65,15 @@ func (ROUTER) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			f(mr)
 		}
 		return
+
+	} else if fn, ok := ActionFuncMap["_DEFAULT_"]; ok { // default "/"
+		// run serve http
+		lenOfContents := fn(mr)
+		if lenOfContents != -1 {
+			s := time.Since(t)
+			Inf(method, " ", furi, " write:", PackSize(lenOfContents, "b"), " t:", s)
+			return
+		}
 	}
 
 	Err(furi, " ", method, " ", " NOT FOUND ")

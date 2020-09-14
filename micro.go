@@ -32,6 +32,12 @@ func Register(hands ...interface{}) *SERVICE {
 	return s
 }
 
+// default router "/"
+func (s *SERVICE) Default(f func(*MicroRequest) int) *SERVICE {
+	ActionFuncMap["_DEFAULT_"] = f
+	return s
+}
+
 // global before call
 func (s *SERVICE) Before(f func(*MicroRequest) bool) *SERVICE {
 	MiddleFuncMap["GLOBAL before"] = f
