@@ -28,6 +28,15 @@ func main() {
 		fmt.Println("i'm running after <GLB>")
 		return true
 	}
+    
+    // 添加一个默认路由
+	// 返回 -1 则是 404
+	service.Default(func(m *micro.MicroRequest) int {
+		if len(m.R.URL.Query().Get("test")) == 0 {
+			return -1
+		}
+		return GET{}.FullCheck(m)
+	})
 
 	service.Before(bf)
 	service.After(af)
