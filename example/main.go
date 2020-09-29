@@ -34,6 +34,8 @@ func main() {
 		return GET{}.FullCheck(m)
 	})
 
+	micro.SS("test")
+
 	service.Start(8000, 10)
 }
 

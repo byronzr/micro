@@ -1,11 +1,11 @@
 package micro
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
-	"runtime"
-	"encoding/json"
+	"runtime/debug"
 )
 
 func Inf(msg ...interface{}) {
@@ -25,12 +25,11 @@ func Wrn(msg ...interface{}) {
 }
 
 func Err(msg ...interface{}) {
-	_, file, line, _ := runtime.Caller(1)
 	logger := log.New(os.Stdout, "\033[31mERR\033[0m ", log.LstdFlags)
-	nmsg := []interface{}{fmt.Sprintf("%s:%d\n", file, line)}
+	nmsg := []interface{}{}
 	nmsg = append(nmsg, "\033[31m")
 	nmsg = append(nmsg, msg...)
-	nmsg = append(nmsg,"\033[0m")
+	nmsg = append(nmsg, "\033[0m")
 	logger.Print(nmsg...)
 }
 
@@ -44,4 +43,14 @@ func DD(o ...interface{}) {
 		buf = append(buf, []byte(fmt.Sprintf("\n\033[33m----%02d----------------------------------------------\033[0m\n%s", idx, string(out)))...)
 	}
 	fmt.Println(string(buf))
+}
+
+func SS(msg ...interface{}) {
+	s := debug.Stack()
+	logger := log.New(os.Stdout, "\033[31m>>> ", log.LstdFlags)
+	nmsg := []interface{}{}
+	nmsg = append(nmsg, msg...)
+	nmsg = append(nmsg, "\n"+string(s))
+	nmsg = append(nmsg, "\033[0m")
+	logger.Print(nmsg...)
 }
