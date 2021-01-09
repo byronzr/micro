@@ -15,3 +15,13 @@ func (POST) ReportThisweek(m *micro.MicroRequest) int {
 	}
 	return l
 }
+
+func (POST) ResponseJsonFail(m *micro.MicroRequest) int {
+	micro.Err("check this longfile flag.")
+	return m.Fail("fail", -1)
+}
+
+func (POST) ResponseJsonSuccess(m *micro.MicroRequest) int {
+	result := "this is result."
+	return m.Success("success", result)
+}
