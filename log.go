@@ -25,7 +25,7 @@ func Wrn(msg ...interface{}) {
 }
 
 func Err(msg ...interface{}) {
-	logger := log.New(os.Stdout, "\033[31mERR\033[0m ", log.LstdFlags)
+	logger := log.New(os.Stdout, "\033[31mERR\033[0m ", log.Llongfile)
 	nmsg := []interface{}{}
 	nmsg = append(nmsg, "\033[31m")
 	nmsg = append(nmsg, msg...)
@@ -34,6 +34,7 @@ func Err(msg ...interface{}) {
 }
 
 func DD(o ...interface{}) {
+	logger := log.New(os.Stdout, "\033[31m>>> ", log.LstdFlags)
 	buf := make([]byte, 0)
 	for idx, s := range o {
 		out, err := json.MarshalIndent(s, "", "\t")
@@ -42,7 +43,7 @@ func DD(o ...interface{}) {
 		}
 		buf = append(buf, []byte(fmt.Sprintf("\n\033[33m----%02d----------------------------------------------\033[0m\n%s", idx, string(out)))...)
 	}
-	fmt.Println(string(buf))
+	logger.Print(string(buf))
 }
 
 func SS(msg ...interface{}) {

@@ -2,17 +2,10 @@ package micro
 
 import (
 	"fmt"
-	"net/http"
 	"reflect"
 	"regexp"
 	"strings"
 )
-
-type MicroRequest struct {
-	R *http.Request
-	W http.ResponseWriter
-	M *Middle
-}
 
 // request method set
 var (

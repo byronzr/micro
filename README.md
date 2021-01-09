@@ -99,3 +99,35 @@ func (GET) FullCheck(m *micro.MicroRequest) int {
 INF 2020/09/07 10:24:03 :::::: service [ 8000 ] start ::::::
 ```
 
+# changelog
+> 2020-01-09 add Fail / Success / Standard Response
+```go
+
+type Response struct {
+	Code   int         `json:"code"`
+	Msg    string      `json:"msg"`
+	Result interface{} `json:"result"`
+}
+
+func (POST) ResponseJsonFail(m *micro.MicroRequest) int {
+	micro.Err("check this longfile flag.")
+	return m.Fail("fail", -1)
+}
+
+//{
+//  "code": -1,
+//  "msg": "fail",
+//  "result": null
+//}
+
+func (POST) ResponseJsonSuccess(m *micro.MicroRequest) int {
+	result := "this is result."
+	return m.Success("success", result)
+}
+
+//{
+//  "code": 0,
+//  "msg": "success",
+//  "result": "this is result."
+//}
+```
