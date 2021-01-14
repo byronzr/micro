@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"runtime/debug"
 )
 
@@ -25,9 +26,16 @@ func Wrn(msg ...interface{}) {
 }
 
 func Err(msg ...interface{}) {
-	logger := log.New(os.Stdout, "\033[31mERR\033[0m ", log.Llongfile)
+	_, file, line, ok := runtime.Caller(1)
+
+	logger := log.New(os.Stdout, "\033[31mERR\033[0m ", log.LstdFlags)
 	nmsg := []interface{}{}
 	nmsg = append(nmsg, "\033[31m")
+	prefix := ""
+	if ok {
+		prefix = fmt.Sprintf("%s [%d]\n", file, line)
+		nmsg = append(nmsg, prefix)
+	}
 	nmsg = append(nmsg, msg...)
 	nmsg = append(nmsg, "\033[0m")
 	logger.Print(nmsg...)
